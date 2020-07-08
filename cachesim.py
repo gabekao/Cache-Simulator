@@ -9,6 +9,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import math
 
 class fileInfo(object):
     filename = ""
@@ -41,13 +42,15 @@ def processArgs():
     return currentFile
 
 workingFile = processArgs()
-tagSize = 0
-indexSize = 0
+offsetBits = math.log2(workingFile.blockSize)
 totalRows = (workingFile.cacheSize * 2**10) / (workingFile.blockSize * workingFile.assoc)
 totalBlocks = totalRows * workingFile.assoc
-overhead = 0
-IMS = 0
-cost = 0
+indexSize = math.log2(totalRows)
+tagSize = 32 - indexSize - offsetBits
+overhead = workingFile.assoc * (1 + tagSize) * totalRows / 8
+IMSkb = (overhead / 2**10) + workingFile.cacheSize
+IMSbytes = IMSkb * 2**10
+cost = "{:.2f}".format(IMSkb * 0.07)
 
 # Print header
 print()
@@ -64,10 +67,10 @@ print()
 print("***** Cache Calculate Values *****")
 print()
 print("Total # Blocks:\t\t\t" + str(int(totalBlocks)))
-print("Tag Size:\t\t\t" + str(tagSize) + " bits")
-print("Index Size:\t\t\t" + str(indexSize) + " bits")
+print("Tag Size:\t\t\t" + str(int(tagSize)) + " bits")
+print("Index Size:\t\t\t" + str(int(indexSize)) + " bits")
 print("Total # Rows:\t\t\t" + str(int(totalRows)) + " bytes")
-print("Overhead Size:\t\t\t" + str(overhead))
-print("Implementation Memory Size:\t" + str(IMS))
+print("Overhead Size:\t\t\t" + str(int(overhead)) + " bytes")
+print("Implementation Memory Size:\t" + str(int(IMSkb)) + " KB (" + str(int(IMSbytes)) + " bytes)")
 print("Cost:\t\t\t\t" + "$" + str(cost))
 print()
