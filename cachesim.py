@@ -40,6 +40,14 @@ def processArgs():
             currentFile.replPolStr = 'Least Recently Used'
     return currentFile
 
+totalBlocks = 0
+tagSize = 0
+indexSize = 0
+totalRows = 0
+overhead = 0
+IMS = 0
+cost = 0
+
 # Print header
 print()
 print("Cache Simulator - CS 3853 - Group #9")
@@ -48,18 +56,18 @@ print()
 print("Trace File: " + workingFile.filename)
 print()
 print("***** Cache Input Parameters ****")
-print("Cache Size:\t\t" + str(workingFile.cacheSize) + " KB")
-print("Block Size:\t\t" + str(workingFile.blockSize) + " Bytes")
-print("Associativity:\t\t" + str(workingFile.associativity))
-print("Replacement Policy:\t" + str(workingFile.replPolStr))
+print("Cache Size:\t\t\t" + str(workingFile.cacheSize) + " KB")
+print("Block Size:\t\t\t" + str(workingFile.blockSize) + " Bytes")
+print("Associativity:\t\t\t" + str(workingFile.associativity))
+print("Replacement Policy:\t\t" + str(workingFile.replPolStr))
 print()
 print("***** Cache Calculate Values *****")
 print()
-print("Total # Blocks:")
-print("Tag Size:")
-print("Index Size:")
-print("Total # Rows:")
-print("Overhead Size:")
-print("Implementation Memory Size:")
-print("Cost:")
+print("Total # Blocks:\t\t\t" + str(totalBlocks))
+print("Tag Size:\t\t\t" + str(tagSize) + " bits")
+print("Index Size:\t\t\t" + str(indexSize) + " bits")
+print("Total # Rows:\t\t\t" + str(totalRows) + " bytes")
+print("Overhead Size:\t\t\t" + str(overhead))
+print("Implementation Memory Size:\t" + str(IMS))
+print("Cost:\t\t\t\t" + "$" + str(cost))
 print()
