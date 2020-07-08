@@ -1,10 +1,10 @@
-#####################################
-# Cache Sim Project by Group 5      #
-# Members: Zack Ulloa,              #
-# Version: 1.0                      #
-# Date: 07/07/2020                  #
-# Class CS3853                      #
-#####################################
+################################################
+# Cache Sim Project by Group 9                 #
+# Members: Zack Ulloa, Gabriel Kao, Mimi Huynh #
+# Version: 1.0                                 #
+# Date: 07/07/2020                             #
+# Class CS3853                                 #
+################################################
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
