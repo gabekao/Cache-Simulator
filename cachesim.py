@@ -14,7 +14,7 @@ class fileInfo(object):
     filename = ""
     cacheSize = 0
     blockSize = 0
-    associativity = 0
+    assoc = 0
     replPol = ""
     replPolStr = ""
 
@@ -23,11 +23,11 @@ def processArgs():
     if '-f' in sys.argv:
         currentFile.filename = sys.argv[sys.argv.index('-f')+1]
     if '-s' in sys.argv:
-        currentFile.cacheSize = sys.argv[sys.argv.index('-s')+1]
+        currentFile.cacheSize = int(sys.argv[sys.argv.index('-s')+1])
     if '-b' in sys.argv:
-        currentFile.blockSize = sys.argv[sys.argv.index('-b')+1]
+        currentFile.blockSize = int(sys.argv[sys.argv.index('-b')+1])
     if '-a' in sys.argv:
-        currentFile.associativity = sys.argv[sys.argv.index('-a')+1]
+        currentFile.assoc = int(sys.argv[sys.argv.index('-a')+1])
     if '-r' in sys.argv:
         if 'RR' in sys.argv:
             currentFile.replPol = 'RR'
@@ -40,33 +40,33 @@ def processArgs():
             currentFile.replPolStr = 'Least Recently Used'
     return currentFile
 
-totalBlocks = 0
+workingFile = processArgs()
 tagSize = 0
 indexSize = 0
-totalRows = 0
+totalRows = (workingFile.cacheSize * 2**10) / (workingFile.blockSize * workingFile.assoc)
+totalBlocks = totalRows * workingFile.assoc
 overhead = 0
 IMS = 0
 cost = 0
 
 # Print header
 print()
-print("Cache Simulator - CS 3853 - Group #9")
-workingFile = processArgs()
+print("Cache Simulator CS 3853 Summer 2020 - Group #9")
 print()
 print("Trace File: " + workingFile.filename)
 print()
 print("***** Cache Input Parameters ****")
 print("Cache Size:\t\t\t" + str(workingFile.cacheSize) + " KB")
 print("Block Size:\t\t\t" + str(workingFile.blockSize) + " Bytes")
-print("Associativity:\t\t\t" + str(workingFile.associativity))
+print("Associativity:\t\t\t" + str(workingFile.assoc))
 print("Replacement Policy:\t\t" + str(workingFile.replPolStr))
 print()
 print("***** Cache Calculate Values *****")
 print()
-print("Total # Blocks:\t\t\t" + str(totalBlocks))
+print("Total # Blocks:\t\t\t" + str(int(totalBlocks)))
 print("Tag Size:\t\t\t" + str(tagSize) + " bits")
 print("Index Size:\t\t\t" + str(indexSize) + " bits")
-print("Total # Rows:\t\t\t" + str(totalRows) + " bytes")
+print("Total # Rows:\t\t\t" + str(int(totalRows)) + " bytes")
 print("Overhead Size:\t\t\t" + str(overhead))
 print("Implementation Memory Size:\t" + str(IMS))
 print("Cost:\t\t\t\t" + "$" + str(cost))
