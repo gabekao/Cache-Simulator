@@ -74,3 +74,13 @@ print("Overhead Size:\t\t\t" + str(int(overhead)) + " bytes")
 print("Implementation Memory Size:\t" + str(int(IMSkb)) + " KB (" + str(int(IMSbytes)) + " bytes)")
 print("Cost:\t\t\t\t" + "$" + str(cost))
 print()
+
+with open(workingFile.filename, 'r') as fp:
+    for x in range(60):
+        line = fp.readline()
+        if x % 3 == 0:
+            print("0x" + line[10:18] + ": (00" + line[5:7] + ")")
+        else:
+            continue
+print()
+fp.close()
