@@ -53,27 +53,21 @@ IMSbytes = IMSkb * 2**10
 cost = "{:.2f}".format(IMSkb * 0.07)
 
 # Print header
-print()
-print("Cache Simulator CS 3853 Summer 2020 - Group #9")
-print()
-print("Trace File: " + workingFile.filename)
-print()
+print("\nCache Simulator CS 3853 Summer 2020 - Group #9\n")
+print("Trace File: " + workingFile.filename + "\n")
 print("***** Cache Input Parameters ****")
 print("Cache Size:\t\t\t" + str(workingFile.cacheSize) + " KB")
 print("Block Size:\t\t\t" + str(workingFile.blockSize) + " Bytes")
 print("Associativity:\t\t\t" + str(workingFile.assoc))
-print("Replacement Policy:\t\t" + str(workingFile.replPolStr))
-print()
-print("***** Cache Calculate Values *****")
-print()
+print("Replacement Policy:\t\t" + str(workingFile.replPolStr) + "\n")
+print("***** Cache Calculate Values ***** \n")
 print("Total # Blocks:\t\t\t" + str(int(totalBlocks)))
 print("Tag Size:\t\t\t" + str(int(tagSize)) + " bits")
 print("Index Size:\t\t\t" + str(int(indexSize)) + " bits")
 print("Total # Rows:\t\t\t" + str(int(totalRows)) + " bytes")
 print("Overhead Size:\t\t\t" + str(int(overhead)) + " bytes")
 print("Implementation Memory Size:\t" + str(int(IMSkb)) + " KB (" + str(int(IMSbytes)) + " bytes)")
-print("Cost:\t\t\t\t" + "$" + str(cost))
-print()
+print("Cost:\t\t\t\t" + "$" + str(cost) + "\n")
 
 with open(workingFile.filename, 'r') as fp:
     for x in range(60):
