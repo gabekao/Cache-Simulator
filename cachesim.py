@@ -53,7 +53,7 @@ IMSbytes = IMSkb * 2**10
 cost = "{:.2f}".format(IMSkb * 0.07)
 
 # Print header
-print("\nCache Simulator CS 3853 Summer 2020 - Group #9\n")
+print("\nCache Simulator CS 3853 Summer 2020 - Group #9\n\n")
 print("Trace File: " + workingFile.filename + "\n")
 print("***** Cache Input Parameters ****")
 print("Cache Size:\t\t\t" + str(workingFile.cacheSize) + " KB")
