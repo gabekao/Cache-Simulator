@@ -9,6 +9,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import math
 
 class fileInfo(object):
     filename = ""
@@ -41,33 +42,39 @@ def processArgs():
     return currentFile
 
 workingFile = processArgs()
-tagSize = 0
-indexSize = 0
+offsetBits = math.log2(workingFile.blockSize)
 totalRows = (workingFile.cacheSize * 2**10) / (workingFile.blockSize * workingFile.assoc)
 totalBlocks = totalRows * workingFile.assoc
-overhead = 0
-IMS = 0
-cost = 0
+indexSize = math.log2(totalRows)
+tagSize = 32 - indexSize - offsetBits
+overhead = workingFile.assoc * (1 + tagSize) * totalRows / 8
+IMSkb = (overhead / 2**10) + workingFile.cacheSize
+IMSbytes = IMSkb * 2**10
+cost = "{:.2f}".format(IMSkb * 0.07)
 
 # Print header
-print()
-print("Cache Simulator CS 3853 Summer 2020 - Group #9")
-print()
-print("Trace File: " + workingFile.filename)
-print()
+print("\nCache Simulator CS 3853 Summer 2020 - Group #9\n\n")
+print("Trace File: " + workingFile.filename + "\n")
 print("***** Cache Input Parameters ****")
 print("Cache Size:\t\t\t" + str(workingFile.cacheSize) + " KB")
 print("Block Size:\t\t\t" + str(workingFile.blockSize) + " Bytes")
 print("Associativity:\t\t\t" + str(workingFile.assoc))
-print("Replacement Policy:\t\t" + str(workingFile.replPolStr))
-print()
-print("***** Cache Calculate Values *****")
-print()
+print("Replacement Policy:\t\t" + str(workingFile.replPolStr) + "\n")
+print("***** Cache Calculate Values ***** \n")
 print("Total # Blocks:\t\t\t" + str(int(totalBlocks)))
-print("Tag Size:\t\t\t" + str(tagSize) + " bits")
-print("Index Size:\t\t\t" + str(indexSize) + " bits")
+print("Tag Size:\t\t\t" + str(int(tagSize)) + " bits")
+print("Index Size:\t\t\t" + str(int(indexSize)) + " bits")
 print("Total # Rows:\t\t\t" + str(int(totalRows)) + " bytes")
-print("Overhead Size:\t\t\t" + str(overhead))
-print("Implementation Memory Size:\t" + str(IMS))
-print("Cost:\t\t\t\t" + "$" + str(cost))
+print("Overhead Size:\t\t\t" + str(int(overhead)) + " bytes")
+print("Implementation Memory Size:\t" + str(int(IMSkb)) + " KB (" + str(int(IMSbytes)) + " bytes)")
+print("Cost:\t\t\t\t" + "$" + str(cost) + "\n")
+
+with open(workingFile.filename, 'r') as fp:
+    for x in range(60):
+        line = fp.readline()
+        if x % 3 == 0:
+            print("0x" + line[10:18] + ": (00" + line[5:7] + ")")
+        else:
+            continue
 print()
+fp.close()
