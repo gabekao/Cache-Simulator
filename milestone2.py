@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+################################################
+# Cache Sim Project by Group 9                 #
+# Members: Zack Ulloa, Gabriel Kao, Mimi Huynh #
+# Class CS3853                                 #
+################################################
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Jul  8 21:37:45 2020
-
-@author: tammy2
-"""
 
 import sys
 import math
@@ -41,7 +41,6 @@ workingFile.assoc = int(values["-a"])
 workingFile.replPol = values["-r"]
 workingFile.replPolStr = values["replPolStr"]
 
-print("wtf " + str(workingFile.blockSize))
 offsetBits = math.log2(workingFile.blockSize)
 totalRows = (workingFile.cacheSize * 2**10) / (workingFile.blockSize * workingFile.assoc)
 totalBlocks = totalRows * workingFile.assoc
