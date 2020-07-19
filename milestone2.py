@@ -52,34 +52,32 @@ IMSbytes = IMSkb * 2**10
 cost = "{:.2f}".format(IMSkb * 0.07)
 
 debugVar = 0
+testAccess = -totalBlocks
 
 #def main(): 
 with open(workingFile.filename, 'r') as fp:
-    #for x in range(60):
     for line in fp:
-        #print(line)
         if "EIP" in line:
             readSize = line[5:7]
             address = line[10:18]
-            #print("readSize: " + str(readSize)) #just making sure it's parsing correctly
-            #print("address: " + str(address))
-            #print()
+            if int(readSize) + int(("0x" + line[17]), 16) > 15: #sample extra-block increment
+                testAccess += 2
+            else: 
+                testAccess += 1
+            #👁👄👁
         elif "dstM" in line:
             writeAdd = str(line[6:14])
             readAdd = str(line[33:41])
             if writeAdd == "00000000" and readAdd == "00000000":
                 continue #don't process if it's empty  ?
             else:
-                #print(writeAdd) #just making sure it's parsing correctly
-                #print(readAdd)
-                #print("------")
-                continue
+                testAccess += 1
         else: #blank line
             continue
 
 # Print header
 print("***** Cache Simulation Results *****")
-print("Total Cache Accesses\t\t" + str(debugVar))
+print("Total Cache Accesses\t\t" + str(testAccess))
 print("Cache Hits\t\t\t" + str(debugVar))
 print("Cache Misses\t\t\t" + str(debugVar))
 print("--- Compulsory Misses:\t\t" + str(debugVar))
