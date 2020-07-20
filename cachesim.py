@@ -41,6 +41,22 @@ def processArgs():
             currentFile.replPolStr = 'Least Recently Used'
     return currentFile
 
+def cachesimPrint():
+    print("***** Cache Simulation Results *****")
+    print("Total Cache Accesses\t\t" + str(debugVar))
+    print("Cache Hits\t\t\t" + str(debugVar))
+    print("Cache Misses\t\t\t" + str(debugVar))
+    print("--- Compulsory Misses:\t\t" + str(debugVar))
+    print("--- Conflict Misses:\n")
+    print("***** ***** CACHE HIT & MISS RATE: ***** *****")
+    print("Hit Rate:\t\t" + str(int(debugVar)) + "%")
+    print("Miss Rate:\t\t" + str(int(debugVar)) + "%")
+    print("CPI:\t\t\t" + str(int(debugVar)) + " Cycles/Instruction")
+    print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
+    print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
+    print()
+    return
+
 workingFile = processArgs()
 offsetBits = math.log2(workingFile.blockSize)
 totalRows = (workingFile.cacheSize * 2**10) / (workingFile.blockSize * workingFile.assoc)
@@ -78,3 +94,5 @@ with open(workingFile.filename, 'r') as fp:
             continue
 print()
 fp.close()
+
+cachesimPrint()
