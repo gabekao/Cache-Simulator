@@ -5,13 +5,22 @@
 ################################################
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 import sys
 import math
 import array
 import random
 import time #🐛🐜
 
+# Decl. global vars
+totalAccess = 0
+hits = 0
+compMiss = 0
+capMiss = 0
+collMiss = 0
+debugVar = 0
+currentCycle = 0
+
+# Decl. objects
 class fileInfo(object):
     filename = ""
     cacheSize = 0
@@ -19,7 +28,95 @@ class fileInfo(object):
     assoc = 0
     totalRows = 0
     replPol = ""
-    replPolStr = ""    
+    replPolStr = ""
+
+# TEAM: This is the new structure/framework for the cache I'm implementing. I didn't
+# take out the old one yet just in case this is a bust for whatever reason. When
+# referencing the cache, use the self value. 
+class Cache:
+    def __init__(self, name, blockSize, associativity, replPol, totalSets):
+        # Parameters for initialization
+        self.name = name
+        self.blockSize = blockSize
+        self.totalBlocks = totalBlocks
+        self.associativity = associativity
+        self.replPol = replPol
+        self.totalSets = totalSets # This is just the rows. The 'total set' of blocks.
+        # Dictionary that holds the cache blocks.
+        self.data = {}
+
+        # Initialize the cache with the dictionaries.
+        for i in range(self.totalSets):
+                index = str(bin(i))[2:].zfill(self.totalSets)
+                if index == '':
+                    index = '0'
+                self.data[index] = {}   #Create a dictionary of blocks for each set
+        
+        def read(self, address, current_step):
+            # We implement the read here to keep the code clean and associated
+            # with our cache object.
+            # TODO: Parse the address given for read into the index,
+            # tag, and the offset.
+            # TODO: Implement replacement policies.
+            index = 0
+            tag = 0
+            offSet = 0
+            # Get the tags in this set
+            inCache = self.data[index].keys()
+
+            # When there's space in the set, add this block to it.
+            if len(inCache) < self.associativity:
+                    self.data[index][tag] = Block(self.blockSize, currentCycle, address)
+            else:
+                # Handle replacement policies here.
+                debugVar = 0
+            return
+
+        def write(self, address, currentCycle):
+            # Same as before, keeping it assoc with the obj.
+            # TODO: Parse the address given for read into the index,
+            # tag, and the offset.
+            # TODO: Implement replacement policies.
+            index = 0
+            tag = 0
+            offSet = 0
+            # Get the tags in this set
+            inCache = self.data[index].keys()
+
+            # Check if the tag is in the cache set.
+            if tag in inCache:
+                self.data[index][tag].write(currentCycle)
+                # Then the call was a hit.
+            elif len(inCache) < self.associativity:
+                # If there is space in this set, create a new block and set its dirty bit to true if this write is coming from the CPU
+                self.data[index][tag] = Block(self.blockSize, currentCycle, address)
+
+            else:
+                # Handle replacement policies here.
+                debugVar = 0
+            return
+
+# Create block obj to populate our 'cache'.
+class Block:
+    def __init__(self, blockSize, currentCycle, address):
+        self.size = block_size
+        self.inUse = False
+        self.lastAccess = currentCycle
+        self.address = address
+    # Check if the block is empty.
+    def is_empty(self):
+        return self.inUse
+    # Write to block.
+    def write(self, currentCycle):
+        self.inUse = True
+        self.lastAccess = currentCycle
+    # Empty the block.
+    def empty(self):
+        self.inUse = False
+        self.address = 0
+    # Read from block
+    def read(self, currentCycle):
+        self.lastAccess = currentCycle
 
 def processArgs():
     currentFile = fileInfo()
@@ -56,10 +153,6 @@ IMSkb = (overhead / 2**10) + workingFile.cacheSize
 IMSbytes = IMSkb * 2**10
 cost = "{:.2f}".format(IMSkb * 0.07)
 
-class blockInfo(object):
-    addressList = ['0']
-    blocksize = workingFile.blockSize
-
 # Print header
 print("\nCache Simulator CS 3853 Summer 2020 - Group #9")
 print()
@@ -80,14 +173,6 @@ print("Total # Rows:\t\t\t" + str(int(workingFile.totalRows)))
 print("Overhead Size:\t\t\t" + str(int(overhead)) + " bytes")
 print("Implementation Memory Size:\t" + str(int(IMSkb)) + " KB (" + str(int(IMSbytes)) + " bytes)")
 print("Cost:\t\t\t\t" + "$" + str(cost) + "\n")
-debugVar = 0
-
-totalAccess = 0
-hits = 0
-compMiss = 0
-capMiss = 0
-collMiss = 0
-
 
 # Reads text file and then runs the cache simulation
 def runSim(workingFile):
@@ -101,7 +186,6 @@ def runSim(workingFile):
     global compMiss
     global capMiss
     global collMiss
-    #this is probably a shitty way to do this but im lazy at 5am
 
     #DEBUGSET = set()#🐛🐜
 
@@ -171,7 +255,8 @@ def runSim(workingFile):
     return
 
 runSim(workingFile)
-
+hitRate = round(((hits/totalAccess)*100), 2)
+missRate = round((((compMiss + capMiss)/totalAccess)*100), 2)
 # Print header
 print("***** Cache Simulation Results *****")
 print("Total Cache Accesses\t\t" + str(totalAccess))
@@ -180,10 +265,9 @@ print("Cache Misses\t\t\t" + str(compMiss + capMiss + collMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
 print("--- Conflict Misses:\t\t" + str(collMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
-print("Hit Rate:\t\t" + str(int(debugVar)) + "%")
-print("Miss Rate:\t\t" + str(int(debugVar)) + "%")
+print("Hit Rate:\t\t" + str(hitRate) + "%")
+print("Miss Rate:\t\t" + str(missRate) + "%")
 print("CPI:\t\t\t" + str(int(debugVar)) + " Cycles/Instruction")
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
-   
