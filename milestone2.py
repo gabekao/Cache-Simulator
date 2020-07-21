@@ -67,8 +67,6 @@ class Cache:
         global capMiss
         global collMiss
 
-        print(currentCycle)
-
         indexMask = int("0b" + WF.tagSize * "0" + (32 - WF.tagSize) * "1", 2)
         offsetMask = int("0b" + (32 - WF.offsetSize) * "0" + WF.offsetSize * "1", 2)
         tag = (address >> (WF.tagSize + WF.offsetSize))
@@ -86,19 +84,18 @@ class Cache:
             compMiss += 1
         elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
             if WF.replPol == "RR":
+                tempIndex = list(self.data[index])[0]
+                tempValue = self.data[index][tempIndex].lastAccess
                 for x in list(self.data[index]):
-                    debugVar = 0
-                    #print(self.data[index][x].read())
-                    # Just realized LRU is basically RR except reads can update the last used time. 
-                # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
-                debugVar = 0
+                    if (self.data[index][x].lastAccess) < tempValue:
+                        tempIndex = x
+                        tempValue = self.data[index][x].lastAccess
+                    self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
             if WF.replPol == "RND":
-                #print(random.choice(list(self.data[index])))
                 self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
             collMiss += 1
         else:
             hits += 1
-            
         totalAccess += 1
         return
 
@@ -113,9 +110,9 @@ class Block:
         self.lastAccess = currentCycle
     # Read from block
     def read(self):
-        return self.lastAccess
+        #return self.lastAccess
         #print(self.lastAccess)
-        #self.lastAccess = currentCycle
+        self.lastAccess = currentCycle
 
 def processArgs():
     currentFile = fileInfo()
