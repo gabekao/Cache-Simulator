@@ -101,7 +101,7 @@ class Cache:
             hits += 1
             
         totalAccess += 1
-        # TODO: Fix total accesses. 
+        # TODO: Fix total accesses. i.e. Calculate for going over 1 block. Maybe other things because there's theoretically 350466 addresses. 
         return
 
     def write(self, address, currentCycle):
