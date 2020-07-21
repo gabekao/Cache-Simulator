@@ -84,13 +84,11 @@ class Cache:
         inCache = self.data[index].keys()
 
         #print(len(inCache))
-        if len(self.data[index]) < self.associativity:
+        if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
             self.data[index][tag] = Block(self.blockSize, currentCycle, address)
             compMiss += 1
             # TODO: This never gets past 1-block filling a row. Needs a fix. 
         elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
-            #print("\t\tIS REPLPOL EVER REACHED")
-            # TODO: Implement replacement policies.
             if WF.replPol == "RR":
                 # Just realized LRU is basically RR except reads can update the last used time. 
                 # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
@@ -100,7 +98,6 @@ class Cache:
                 self.data[index][random.choice(list(self.data[index]))] = Block(self.blockSize, currentCycle, address)
             collMiss += 1
         else:
-            #print("wait is it elseing?")
             hits += 1
             
         totalAccess += 1
@@ -237,7 +234,7 @@ def runSim(WF):
                 if writeAdd != 0:
                     cacheSim.read(writeAdd, rwSize, clock)
                     # TODO: Needs a way to skip to write immediately. 
-                elif readAdd != 0:
+                if readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
                 else:
                     continue #🐛🐜
