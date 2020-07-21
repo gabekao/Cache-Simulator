@@ -192,8 +192,8 @@ def runSim(WF):
     cacheSim = Cache(WF)
     q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
-        clock += 1
         for line in fp:
+            clock += 1
             if "EIP" in line:
                 readSize = line[5:7]
                 q1.put(readSize)
