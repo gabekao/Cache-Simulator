@@ -1,6 +1,6 @@
 ################################################
 # Cache Sim Project by Group 9                 #
-# Members: Zack Ulloa, Gabriel Kao, Mimi Huynh #
+# Members: Gabriel Kao, Zack Ulloa, Mimi Huynh #
 # Class CS3853                                 #
 ################################################
 #!/usr/bin/python3
@@ -41,9 +41,7 @@ class fileInfo(object):
     IMSbytes = 0
     cost = 0
 
-# TEAM: This is the new structure/framework for the cache I'm implementing. I didn't
-# take out the old one yet just in case this is a bust for whatever reason. When
-# referencing the cache, use the self value. 
+# Build cache object 
 class Cache:
     def __init__(self, WF):
         # Parameters for initialization
@@ -57,10 +55,6 @@ class Cache:
 
         # Initialize the cache with the dictionaries.
         for i in range(self.totalSets):
-            #index = str((i))[2:].zfill(self.totalSets)
-            #
-            #if index == '':
-            #    index = '0'
             self.data[i] = {}   #Create a dictionary of blocks for each set
         
     def read(self, address, readSize, currentCycle):
@@ -207,7 +201,6 @@ def runSim(WF):
                 readAdd = int("0x" + line[33:41], 16)
                 if writeAdd != 0:
                     cacheSim.read(writeAdd, rwSize, clock)
-                    # TODO: Needs a way to skip to write immediately. 
                 if readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
                 else:
