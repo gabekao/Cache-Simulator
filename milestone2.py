@@ -21,6 +21,7 @@ capMiss = 0
 collMiss = 0
 debugVar = 0
 currentCycle = 0
+clock = 0
 
 # Decl. objects
 class fileInfo(object):
@@ -72,6 +73,8 @@ class Cache:
         global capMiss
         global collMiss
 
+        print(currentCycle)
+
         indexMask = int("0b" + WF.tagSize * "0" + (32 - WF.tagSize) * "1", 2)
         offsetMask = int("0b" + (32 - WF.offsetSize) * "0" + WF.offsetSize * "1", 2)
         tag = (address >> (WF.tagSize + WF.offsetSize))
@@ -85,18 +88,19 @@ class Cache:
 
         #print(len(inCache))
         if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
-            self.data[index][tag] = Block(self.blockSize, currentCycle, offset)
+            self.data[index][tag] = Block(currentCycle, offset)
             compMiss += 1
         elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
             if WF.replPol == "RR":
-                for x in list(self.data[index][x].Block.lastAccess):
-                    print("uh oh wait")
+                for x in list(self.data[index]):
+                    debugVar = 0
+                    #print(self.data[index][x].read())
                     # Just realized LRU is basically RR except reads can update the last used time. 
                 # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
                 debugVar = 0
             if WF.replPol == "RND":
                 #print(random.choice(list(self.data[index])))
-                self.data[index][random.choice(list(self.data[index]))] = Block(self.blockSize, currentCycle, offset)
+                self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
             collMiss += 1
         else:
             hits += 1
@@ -114,8 +118,10 @@ class Block:
         self.inUse = True
         self.lastAccess = currentCycle
     # Read from block
-    def read(self, currentCycle):
-        self.lastAccess = currentCycle
+    def read(self):
+        return self.lastAccess
+        #print(self.lastAccess)
+        #self.lastAccess = currentCycle
 
 def processArgs():
     currentFile = fileInfo()
@@ -182,7 +188,7 @@ print("Cost:\t\t\t\t" + "$" + str(WF.cost) + "\n")
 
 # Reads text file and then runs the cache simulation
 def runSim(WF):
-    clock = 0
+    global clock
     cacheSim = Cache(WF)
     q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
@@ -213,9 +219,11 @@ def runSim(WF):
 runSim(WF)
 hitRate = round(((hits/totalAccess)*100), 2)
 missRate = round((((compMiss + capMiss)/totalAccess)*100), 2)
+actualAccesses = hits + compMiss + collMiss
+
 # Print header
 print("***** Cache Simulation Results *****")
-print("Total Cache Accesses\t\t" + str(totalAccess))
+print("Total Cache Accesses\t\t" + str(actualAccesses) + "\t(" + str(totalAccess) + " addresses)")
 print("Cache Hits\t\t\t" + str(hits))
 print("Cache Misses\t\t\t" + str(compMiss + capMiss + collMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
@@ -227,34 +235,6 @@ print("CPI:\t\t\t" + str(int(debugVar)) + " Cycles/Instruction")
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
