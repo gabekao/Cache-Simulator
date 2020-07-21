@@ -11,6 +11,7 @@ import math
 import array
 import random
 import time #🐛🐜
+import queue
 
 # Decl. global vars
 totalAccess = 0 #DEBUG
@@ -82,19 +83,20 @@ class Cache:
         inCache = self.data[index].keys()
 
         # When there's space in the set, add this block to it.
-        if len(self.data[index]) > 2:
-            print("fucking finally")
+        if len(self.data[index]) > self.associativity:
+            print("\t\tIS THE ROW EVER FILLED") 
 
         if len(self.data[index]) < self.associativity:
             self.data[index][tag] = Block(self.blockSize, currentCycle, address)
             compMiss += 1
         elif (tag not in self.data[index]) and (len(self.data[index]) > self.associativity):
+            print("\t\tIS REPLPOL EVER REACHED")
             if WF.replPol == "RR":
                 #self.data[index][random.choice()]
                 # Handle replacement policies here.
                 debugVar = 0
             if WF.replPol == "RND":
-                print("yeeyee")
+                print("RND")
         else:
             hits += 1
             
@@ -214,20 +216,25 @@ print("Cost:\t\t\t\t" + "$" + str(WF.cost) + "\n")
 def runSim(WF):
     clock = 0
     cacheSim = Cache(WF)
+    q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
         clock += 1
         for line in fp:
             if "EIP" in line:
                 readSize = line[5:7]
+                q1.put(readSize)
                 address = int("0x" + line[10:18], 16)
-                cacheSim.read(address, readSize, counter)
+                cacheSim.read(address, readSize, clock)
             elif "dstM" in line:
-                writeAdd = str(line[6:14])
-                readAdd = str(line[33:41])
-                if writeAdd == "00000000":
-                    read(writeAdd, clock)
-                elif readAdd == "00000000":
-                    read(readAdd, clock)
+                if q1.qsize() < 2:
+                    continue
+                rwSize = q1.get()
+                writeAdd = int("0x" + line[6:14], 16)
+                readAdd = int("0x" + line[33:41], 16)
+                if writeAdd != "00000000":
+                    cacheSim.read(writeAdd, rwSize, clock)
+                elif readAdd != "00000000":
+                    cacheSim.read(readAdd, rwSize, clock)
                 else:
                     continue #🐛🐜
             else: #blank line
