@@ -78,19 +78,15 @@ class Cache:
         index = ((address & indexMask) >> WF.offsetSize)
         offset = (address & offsetMask)
 
-        # TODO: Implement replacement policies.
-
         inCache = self.data[index].keys()
-
-        # When there's space in the set, add this block to it.
-        if len(self.data[index]) > self.associativity:
-            print("\t\tIS THE ROW EVER FILLED") 
 
         if len(self.data[index]) < self.associativity:
             self.data[index][tag] = Block(self.blockSize, currentCycle, address)
             compMiss += 1
+            # TODO: This never gets past 1-block filling a row. Needs a fix. 
         elif (tag not in self.data[index]) and (len(self.data[index]) > self.associativity):
             print("\t\tIS REPLPOL EVER REACHED")
+            # TODO: Implement replacement policies.
             if WF.replPol == "RR":
                 #self.data[index][random.choice()]
                 # Handle replacement policies here.
@@ -101,6 +97,7 @@ class Cache:
             hits += 1
             
         totalAccess += 1
+        # TODO: Fix total accesses. 
         return
 
     def write(self, address, currentCycle):
@@ -233,6 +230,7 @@ def runSim(WF):
                 readAdd = int("0x" + line[33:41], 16)
                 if writeAdd != "00000000":
                     cacheSim.read(writeAdd, rwSize, clock)
+                    # TODO: Needs a way to skip to write immediately. 
                 elif readAdd != "00000000":
                     cacheSim.read(readAdd, rwSize, clock)
                 else:
