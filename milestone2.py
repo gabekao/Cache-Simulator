@@ -14,7 +14,7 @@ import time #🐛🐜
 import queue
 
 # Decl. global vars
-totalAccess = 0 #DEBUG
+actualAccess = 0 #DEBUG
 hits = 0
 compMiss = 0
 capMiss = 0
@@ -62,7 +62,7 @@ class Cache:
         # with our cache object.
 
         global compMiss
-        global totalAccess
+        global actualAccess
         global hits
         global capMiss
         global collMiss
@@ -73,8 +73,7 @@ class Cache:
         index = ((address & indexMask) >> WF.offsetSize)
         offset = (address & offsetMask)
 
-        #print("Address : " + hex(address))
-        #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
+        
 
         inCache = self.data[index].keys()
 
@@ -85,13 +84,15 @@ class Cache:
         else:
             blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
         
-        index  -= 1
+        index -= 1
         for i in range(blocksNeeded):
             index += 1
             if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
                 self.data[index][tag] = Block(currentCycle, offset)
                 compMiss += 1
             elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
+                #print("Conflict miss:")
+                #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
                 if WF.replPol == "RR":
                     tempIndex = list(self.data[index])[0]
                     tempValue = self.data[index][tempIndex].lastAccess
@@ -106,7 +107,7 @@ class Cache:
             else:
                 hits += 1
             
-        totalAccess += 1
+        actualAccess += 1
         return
 
 # Create block obj to populate our 'cache'.
@@ -217,13 +218,13 @@ def runSim(WF):
     return
 
 runSim(WF)
-hitRate = round(((hits/totalAccess)*100), 2)
-missRate = round((((compMiss + capMiss)/totalAccess)*100), 2)
-actualAccesses = hits + compMiss + collMiss
+hitRate = round(((hits/actualAccess)*100), 2)
+missRate = round((((compMiss + capMiss)/actualAccess)*100), 2)
+totalAccess = hits + compMiss + collMiss
 
 # Print header
 print("***** Cache Simulation Results *****")
-print("Total Cache Accesses\t\t" + str(actualAccesses) + "\t(" + str(totalAccess) + " addresses)")
+print("Total Cache Accesses\t\t" + str(totalAccess) + "\t(" + str(actualAccess) + " addresses)")
 print("Cache Hits\t\t\t" + str(hits))
 print("Cache Misses\t\t\t" + str(compMiss + capMiss + collMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
