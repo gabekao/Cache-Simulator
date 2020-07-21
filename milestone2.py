@@ -85,23 +85,33 @@ class Cache:
         inCache = self.data[index].keys()
 
         #print(len(inCache))
-        if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
-            self.data[index][tag] = Block(currentCycle, offset)
-            compMiss += 1
-        elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
-            if WF.replPol == "RR":
-                tempIndex = list(self.data[index])[0]
-                tempValue = self.data[index][tempIndex].lastAccess
-                for x in list(self.data[index]):
-                    if (self.data[index][x].lastAccess) < tempValue:
-                        tempIndex = x
-                        tempValue = self.data[index][x].lastAccess
-                    self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
-            if WF.replPol == "RND":
-                self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
-            collMiss += 1
+
+        if (tag in self.data[index]):
+            blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
         else:
-            hits += 1
+            blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
+        
+        index  -= 1
+        for i in range(blocksNeeded):
+            index += 1
+            if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
+                self.data[index][tag] = Block(currentCycle, offset)
+                compMiss += 1
+            elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
+                if WF.replPol == "RR":
+                    tempIndex = list(self.data[index])[0]
+                    tempValue = self.data[index][tempIndex].lastAccess
+                    for x in list(self.data[index]):
+                        if (self.data[index][x].lastAccess) < tempValue:
+                            tempIndex = x
+                            tempValue = self.data[index][x].lastAccess
+                        self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
+                if WF.replPol == "RND":
+                    self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
+                collMiss += 1
+            else:
+                hits += 1
+            
         totalAccess += 1
         return
 
@@ -109,7 +119,7 @@ class Cache:
 class Block:
     def __init__(self, currentCycle, offset):
         self.lastAccess = currentCycle
-        self.address = offset
+        self.offset = offset
     # Write to block.
     def write(self, currentCycle):
         self.inUse = True
@@ -204,7 +214,6 @@ def runSim(WF):
                 readAdd = int("0x" + line[33:41], 16)
                 if writeAdd != 0:
                     cacheSim.read(writeAdd, rwSize, clock)
-                    # TODO: Needs a way to skip to write immediately. 
                 if readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
                 else:
@@ -232,23 +241,6 @@ print("CPI:\t\t\t" + str(int(debugVar)) + " Cycles/Instruction")
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
