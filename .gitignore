@@ -1,2 +1,4 @@
 
-.vscode/settings.json
+*.json
+A-9_TraceSampleOutputs.txt
+output.txt
