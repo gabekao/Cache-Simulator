@@ -85,7 +85,7 @@ class Cache:
 
         #print(len(inCache))
         if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
-            self.data[index][tag] = Block(self.blockSize, currentCycle, address)
+            self.data[index][tag] = Block(self.blockSize, currentCycle, offset)
             compMiss += 1
             # TODO: This never gets past 1-block filling a row. Needs a fix. 
         elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
@@ -95,7 +95,7 @@ class Cache:
                 debugVar = 0
             if WF.replPol == "RND":
                 #print(random.choice(list(self.data[index])))
-                self.data[index][random.choice(list(self.data[index]))] = Block(self.blockSize, currentCycle, address)
+                self.data[index][random.choice(list(self.data[index]))] = Block(self.blockSize, currentCycle, offset)
             collMiss += 1
         else:
             hits += 1
