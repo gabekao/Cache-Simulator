@@ -83,10 +83,8 @@ class Cache:
             blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
         else:
             blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
-        
-        index -= 1
-        for i in range(blocksNeeded):
-            index += 1
+
+        for index in range(index, index + blocksNeeded):
             if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
                 self.data[index][tag] = Block(currentCycle, offset)
                 compMiss += 1
