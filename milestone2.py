@@ -88,11 +88,12 @@ class Cache:
             print("\t\tIS REPLPOL EVER REACHED")
             # TODO: Implement replacement policies.
             if WF.replPol == "RR":
-                #self.data[index][random.choice()]
-                # Handle replacement policies here.
+                # Just realized LRU is basically RR except reads can update the last used time. 
+                # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
                 debugVar = 0
             if WF.replPol == "RND":
-                print("RND")
+                #self.data[index][random.choice()]
+                debugVar = 0
         else:
             hits += 1
             
