@@ -13,7 +13,7 @@ import random
 import time #🐛🐜
 
 # Decl. global vars
-totalAccess = 1 #DEBUG
+totalAccess = 0 #DEBUG
 hits = 0
 compMiss = 0
 capMiss = 0
@@ -82,14 +82,19 @@ class Cache:
         inCache = self.data[index].keys()
 
         # When there's space in the set, add this block to it.
+        if len(self.data[index]) > 2:
+            print("fucking finally")
+
         if len(self.data[index]) < self.associativity:
             self.data[index][tag] = Block(self.blockSize, currentCycle, address)
             compMiss += 1
-        #elif Tag isn't present but the row is full.:
+        elif (tag not in self.data[index]) and (len(self.data[index]) > self.associativity):
             if WF.replPol == "RR":
                 #self.data[index][random.choice()]
                 # Handle replacement policies here.
                 debugVar = 0
+            if WF.replPol == "RND":
+                print("yeeyee")
         else:
             totalAccess += 1
             hits += 1
@@ -207,16 +212,8 @@ print("Cost:\t\t\t\t" + "$" + str(WF.cost) + "\n")
 
 # Reads text file and then runs the cache simulation
 def runSim(WF):
-    # Set up cache array
-    #cacheSim = [[0] * int(WF.assoc)] * int(WF.totalRows)
-
-    
-    #this is probably a shitty way to do this but im lazy at 5am
-
     counter = 0
-
     cacheSim = Cache(WF)
-
     with open(WF.filename, 'r') as fp:
         counter += 1
         for line in fp:
@@ -224,7 +221,6 @@ def runSim(WF):
                 readSize = line[5:7]
                 address = int("0x" + line[10:18], 16)
                 cacheSim.read(address, readSize, counter)
-
                 """
                       ▄      ▄    
                       ▐▒▀▄▄▄▄▀▒▌   
