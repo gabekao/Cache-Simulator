@@ -78,6 +78,9 @@ class Cache:
         index = ((address & indexMask) >> WF.offsetSize)
         offset = (address & offsetMask)
 
+        #print("Address : " + hex(address))
+        #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
+
         inCache = self.data[index].keys()
 
         if len(self.data[index]) < self.associativity:
@@ -229,10 +232,10 @@ def runSim(WF):
                 rwSize = q1.get()
                 writeAdd = int("0x" + line[6:14], 16)
                 readAdd = int("0x" + line[33:41], 16)
-                if writeAdd != "00000000":
+                if writeAdd != 0:
                     cacheSim.read(writeAdd, rwSize, clock)
                     # TODO: Needs a way to skip to write immediately. 
-                elif readAdd != "00000000":
+                elif readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
                 else:
                     continue #🐛🐜
