@@ -102,7 +102,6 @@ class Cache:
             collMiss += 1
         else:
             hits += 1
-            
         totalAccess += 1
         return
 
