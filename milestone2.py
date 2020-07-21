@@ -87,10 +87,11 @@ class Cache:
         if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
             self.data[index][tag] = Block(self.blockSize, currentCycle, offset)
             compMiss += 1
-            # TODO: This never gets past 1-block filling a row. Needs a fix. 
         elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
             if WF.replPol == "RR":
-                # Just realized LRU is basically RR except reads can update the last used time. 
+                for x in list(self.data[index][x].Block.lastAccess):
+                    print("uh oh wait")
+                    # Just realized LRU is basically RR except reads can update the last used time. 
                 # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
                 debugVar = 0
             if WF.replPol == "RND":
@@ -103,48 +104,15 @@ class Cache:
         totalAccess += 1
         return
 
-    def write(self, address, currentCycle):
-        # Same as before, keeping it assoc with the obj.
-        # TODO: Parse the address given for read into the index,
-        # tag, and the offset.
-        # TODO: Implement replacement policies.
-        index = 0
-        tag = 0
-        offSet = 0
-        # Get the tags in this set
-        inCache = self.data[index].keys()
-
-        # Check if the tag is in the cache set.
-        if tag in inCache:
-            self.data[index][tag].write(currentCycle)
-            # Then the call was a hit.
-        elif len(inCache) < self.associativity:
-            # If there is space in this set, create a new block and set its dirty bit to true if this write is coming from the CPU
-            self.data[index][tag] = Block(self.blockSize, currentCycle, address)
-
-        else:
-            # Handle replacement policies here.
-            debugVar = 0
-        return
-
 # Create block obj to populate our 'cache'.
 class Block:
-    def __init__(self, blockSize, currentCycle, address):
-        self.size = blockSize
-        self.inUse = False
+    def __init__(self, currentCycle, offset):
         self.lastAccess = currentCycle
-        self.address = address
-    # Check if the block is empty.
-    def is_empty(self):
-        return self.inUse
+        self.address = offset
     # Write to block.
     def write(self, currentCycle):
         self.inUse = True
         self.lastAccess = currentCycle
-    # Empty the block.
-    def empty(self):
-        self.inUse = False
-        self.address = 0
     # Read from block
     def read(self, currentCycle):
         self.lastAccess = currentCycle
