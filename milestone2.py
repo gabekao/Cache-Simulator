@@ -83,25 +83,27 @@ class Cache:
 
         inCache = self.data[index].keys()
 
+        #print(len(inCache))
         if len(self.data[index]) < self.associativity:
             self.data[index][tag] = Block(self.blockSize, currentCycle, address)
             compMiss += 1
             # TODO: This never gets past 1-block filling a row. Needs a fix. 
-        elif (tag not in self.data[index]) and (len(self.data[index]) > self.associativity):
-            print("\t\tIS REPLPOL EVER REACHED")
+        elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
+            #print("\t\tIS REPLPOL EVER REACHED")
             # TODO: Implement replacement policies.
             if WF.replPol == "RR":
                 # Just realized LRU is basically RR except reads can update the last used time. 
                 # Both RR and LRU will look for min clock but LRU will adjust blocks read with newer clocks.
                 debugVar = 0
             if WF.replPol == "RND":
-                #self.data[index][random.choice()]
-                debugVar = 0
+                #print(random.choice(list(self.data[index])))
+                self.data[index][random.choice(list(self.data[index]))] = Block(self.blockSize, currentCycle, address)
+            collMiss += 1
         else:
+            #print("wait is it elseing?")
             hits += 1
             
         totalAccess += 1
-        # TODO: Fix total accesses. i.e. Calculate for going over 1 block. Maybe other things because there's theoretically 350466 addresses. 
         return
 
     def write(self, address, currentCycle):
@@ -179,7 +181,7 @@ def calculateArgs(WF):
     WF.indexSize = int(math.log2(WF.totalRows))
     WF.tagSize = int(32 - WF.indexSize - WF.offsetSize)
     WF.overhead = int(WF.assoc * (1 + WF.tagSize) * WF.totalRows / 8)
-    WF.IMSkb = int((WF.overhead / 2**10) + WF.cacheSize)
+    WF.IMSkb = float((WF.overhead / 2**10) + WF.cacheSize)
     WF.IMSbytes = int(WF.IMSkb * 2**10)
     WF.cost = "{:.2f}".format(WF.IMSkb * 0.07)
     return WF
