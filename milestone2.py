@@ -22,6 +22,7 @@ debugVar = 0
 currentCycle = 0
 clock = 0
 cycles=0
+instructs=0
 
 # Decl. objects
 class fileInfo(object):
@@ -80,6 +81,7 @@ class Cache:
 
         if (tag in self.data[index]):
             blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
+            hits+=1
         else:
             blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
         for index in range(index, index + blocksNeeded):
@@ -92,6 +94,8 @@ class Cache:
                 self.data[index][tag] = Block(currentCycle, offset)
                 cycles+=(4*(math.ceil(self.blockSize/4)))
                 compMiss += 1
+                actualAccess+=1
+                return
             elif (tag not in self.data[index]) and (len(self.data[index]) == self.associativity):
                 #print("Conflict miss:")
                 #print("Index R: " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
@@ -113,7 +117,7 @@ class Cache:
                 conflictMiss += 1
                 cycles+=(4*(math.ceil(self.blockSize/4)))
             else:
-                hits += 1
+                
                 cycles+=1
             
         actualAccess += 1
@@ -201,6 +205,7 @@ print("Cost:\t\t\t\t" + "$" + str(WF.cost) + "\n")
 def runSim(WF):
     global clock
     global cycles
+    global instructs
     cacheSim = Cache(WF)
     q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
@@ -212,6 +217,7 @@ def runSim(WF):
                 address = int("0x" + line[10:18], 16)
                 cacheSim.read(address, readSize, clock)
                 cycles+=2 #+2 for each instruction
+                instructs+=1
             elif "dstM" in line:
                 if q1.qsize() < 2:
                     continue
@@ -234,7 +240,11 @@ runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
-cpi=cycles/totalAccess
+print("dividing", str(cycles), "/", str(totalAccess))
+#cpi=float(cycles/totalAccess)
+cpi="{:.2f}".format(cycles/instructs)
+print(cpi)
+
 
 
 # Print header
@@ -247,7 +257,7 @@ print("--- Conflict Misses:\t\t" + str(conflictMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
-print("CPI:\t\t\t" + str(int(cpi)) + " Cycles/Instruction" + "\t(" + str(cycles)+")")
+print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+")")
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
