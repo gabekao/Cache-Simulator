@@ -257,7 +257,7 @@ print()
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
 print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+")")
-print("Unused Cache Space:\t" + str(unusedSize) + " KB / " + str(WF.IMSkb) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
+print("Unused Cache Space:\t" + str(unusedSize) + " KB / " + str(round(WF.IMSkb, 2)) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
 print("Unused Cache Blocks:\t" + str(unusedBlocks) + " / " + str(WF.totalBlocks))
 print()
 
