@@ -17,8 +17,7 @@ import queue
 actualAccess = 0 #DEBUG
 hits = 0
 compMiss = 0
-capMiss = 0
-collMiss = 0
+conflictMiss = 0
 debugVar = 0
 currentCycle = 0
 clock = 0
@@ -65,7 +64,7 @@ class Cache:
         global actualAccess
         global hits
         global capMiss
-        global collMiss
+        global conflictMiss
 
         indexMask = int("0b" + WF.tagSize * "0" + (32 - WF.tagSize) * "1", 2)
         offsetMask = int("0b" + (32 - WF.offsetSize) * "0" + WF.offsetSize * "1", 2)
@@ -73,11 +72,9 @@ class Cache:
         index = ((address & indexMask) >> WF.offsetSize)
         offset = (address & offsetMask)
 
-        
-
         inCache = self.data[index].keys()
 
-        #print(len(inCache))
+        #print(" Index : " + str(index) + " Tag : " + str(tag) + " Offset : " + str(offset))
 
         if (tag in self.data[index]):
             blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
@@ -85,6 +82,9 @@ class Cache:
             blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
 
         for index in range(index, index + blocksNeeded):
+            if index >= WF.totalRows:
+                conflictMiss += 1
+                return
             if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
                 self.data[index][tag] = Block(currentCycle, offset)
                 compMiss += 1
@@ -101,7 +101,7 @@ class Cache:
                         self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
                 if WF.replPol == "RND":
                     self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
-                collMiss += 1
+                conflictMiss += 1
             else:
                 hits += 1
             
@@ -218,15 +218,15 @@ def runSim(WF):
 runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss + capMiss)/actualAccess)*100), 2)
-totalAccess = hits + compMiss + collMiss
+totalAccess = hits + compMiss + conflictMiss
 
 # Print header
 print("***** Cache Simulation Results *****")
 print("Total Cache Accesses\t\t" + str(totalAccess) + "\t(" + str(actualAccess) + " addresses)")
 print("Cache Hits\t\t\t" + str(hits))
-print("Cache Misses\t\t\t" + str(compMiss + capMiss + collMiss))
+print("Cache Misses\t\t\t" + str(compMiss + capMiss + conflictMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
-print("--- Conflict Misses:\t\t" + str(collMiss) + "\n")
+print("--- Conflict Misses:\t\t" + str(conflictMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
