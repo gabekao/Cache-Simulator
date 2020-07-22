@@ -21,6 +21,7 @@ conflictMiss = 0
 debugVar = 0
 currentCycle = 0
 clock = 0
+cycles=0
 
 # Decl. objects
 class fileInfo(object):
@@ -65,6 +66,7 @@ class Cache:
         global hits
         global capMiss
         global conflictMiss
+        global cycles
 
         indexMask = int("0b" + WF.tagSize * "0" + (32 - WF.tagSize) * "1", 2)
         offsetMask = int("0b" + (32 - WF.offsetSize) * "0" + WF.offsetSize * "1", 2)
@@ -83,10 +85,12 @@ class Cache:
 
         for index in range(index, index + blocksNeeded):
             if index >= WF.totalRows:
+                cycles+=(4*(math.ceil(self.blockSize/4)))
                 conflictMiss += 1
                 return
             if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
                 self.data[index][tag] = Block(currentCycle, offset)
+                cycles+=(4*(math.ceil(self.blockSize/4)))
                 compMiss += 1
             elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
                 #print("Conflict miss:")
@@ -101,8 +105,10 @@ class Cache:
                         self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
                 if WF.replPol == "RND":
                     self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
+                cycles+=(4*(math.ceil(self.blockSize/4)))
                 conflictMiss += 1
             else:
+                cycles+=1
                 hits += 1
             
         actualAccess += 1
@@ -189,6 +195,7 @@ print("Cost:\t\t\t\t" + "$" + str(WF.cost) + "\n")
 # Reads text file and then runs the cache simulation
 def runSim(WF):
     global clock
+    global cycles
     cacheSim = Cache(WF)
     q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
@@ -199,6 +206,7 @@ def runSim(WF):
                 q1.put(readSize)
                 address = int("0x" + line[10:18], 16)
                 cacheSim.read(address, readSize, clock)
+                cycles+=2 #+2 for each instruction
             elif "dstM" in line:
                 if q1.qsize() < 2:
                     continue
@@ -207,8 +215,10 @@ def runSim(WF):
                 readAdd = int("0x" + line[33:41], 16)
                 if writeAdd != 0:
                     cacheSim.read(writeAdd, rwSize, clock)
+                    cycles+=1 #+1 to calculate the effective address
                 if readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
+                    cycles+=1 #+1 to calculate the effective address
                 else:
                     continue #🐛🐜
             else: #blank line
@@ -219,6 +229,7 @@ runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
+cpi=cycles/totalAccess
 
 # Print header
 print("***** Cache Simulation Results *****")
@@ -230,7 +241,7 @@ print("--- Conflict Misses:\t\t" + str(conflictMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
-print("CPI:\t\t\t" + str(int(debugVar)) + " Cycles/Instruction")
+print("CPI:\t\t\t" + str(int(cpi)) + " Cycles/Instruction" + "\t(" + str(cycles)+")")
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
