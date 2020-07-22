@@ -74,23 +74,25 @@ class Cache:
 
         inCache = self.data[index].keys()
 
-        #print(" Index : " + str(index) + " Tag : " + str(tag) + " Offset : " + str(offset))
+        #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
 
         if (tag in self.data[index]):
             blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
         else:
             blocksNeeded = math.ceil(int(readSize) / WF.blockSize)
-
         for index in range(index, index + blocksNeeded):
-            if index >= WF.totalRows:
+            if (index >= WF.totalRows) : #and (WF.totalRows is not 1)
                 conflictMiss += 1
+                actualAccess += 1
                 return
-            if (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
+            elif (tag not in self.data[index]) and (len(self.data[index]) < self.associativity):
                 self.data[index][tag] = Block(currentCycle, offset)
                 compMiss += 1
-            elif (tag not in self.data[index]) and (len(self.data[index]) >= self.associativity):
+            elif (tag not in self.data[index]) and (len(self.data[index]) == self.associativity):
                 #print("Conflict miss:")
-                #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
+                #print("Index R: " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
+                #print("Index R: " + hex(index) + " Tag : " + hex(tag))
+                #print("Index C: " + hex(index) + " Tag : " + hex(list(self.data[index])[0]) + " " + hex(list(self.data[index])[1]))
                 if WF.replPol == "RR":
                     tempIndex = list(self.data[index])[0]
                     tempValue = self.data[index][tempIndex].lastAccess
@@ -206,6 +208,7 @@ def runSim(WF):
                 writeAdd = int("0x" + line[6:14], 16)
                 readAdd = int("0x" + line[33:41], 16)
                 if writeAdd != 0:
+                    debugVar = 0
                     cacheSim.read(writeAdd, rwSize, clock)
                 if readAdd != 0:
                     cacheSim.read(readAdd, rwSize, clock)
@@ -219,6 +222,7 @@ runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
+
 
 # Print header
 print("***** Cache Simulation Results *****")
