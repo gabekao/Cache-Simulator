@@ -74,10 +74,6 @@ class Cache:
         index = ((address & indexMask) >> WF.offsetSize)
         offset = (address & offsetMask)
 
-        inCache = self.data[index].keys()
-
-        #print(" Index : " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
-
         if (tag in self.data[index]):
             blocksNeeded = math.ceil((self.data[index][tag].offset + int(readSize))/WF.blockSize)
         else:
@@ -93,11 +89,6 @@ class Cache:
                 cycles+=(4*(math.ceil(self.blockSize/4)))
                 compMiss += 1
             elif (tag not in self.data[index]) and (len(self.data[index]) == self.associativity):
-                #print("Conflict miss:")
-                #print("Index R: " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
-                #print("#: " + str(conflictMiss) + "| Index R: " + hex(index) + " Tag : " + hex(tag))
-                #print("#: " + str(conflictMiss) + "| Index C: " + hex(index) + " Tag : " + hex(list(self.data[index])[0]) + " " + hex(list(self.data[index])[1]))
-                #print()
                 if WF.replPol == "RR":
                     tempIndex = list(self.data[index])[0]
                     tempValue = self.data[index][tempIndex].lastAccess
