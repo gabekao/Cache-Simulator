@@ -217,14 +217,14 @@ def runSim(WF):
 
 runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
-missRate = round((((compMiss + capMiss)/actualAccess)*100), 2)
+missRate = round((((compMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
 
 # Print header
 print("***** Cache Simulation Results *****")
 print("Total Cache Accesses\t\t" + str(totalAccess) + "\t(" + str(actualAccess) + " addresses)")
 print("Cache Hits\t\t\t" + str(hits))
-print("Cache Misses\t\t\t" + str(compMiss + capMiss + conflictMiss))
+print("Cache Misses\t\t\t" + str(compMiss + conflictMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
 print("--- Conflict Misses:\t\t" + str(conflictMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
