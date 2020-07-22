@@ -42,6 +42,7 @@ class fileInfo(object):
     IMSkb = 0
     IMSbytes = 0
     cost = 0
+    costPerKB = 0.07
 
 # Build cache object 
 class Cache:
@@ -160,7 +161,7 @@ def calculateArgs(WF):
     WF.overhead = int(WF.assoc * (1 + WF.tagSize) * WF.totalRows / 8)
     WF.IMSkb = float((WF.overhead / 2**10) + WF.cacheSize)
     WF.IMSbytes = int(WF.IMSkb * 2**10)
-    WF.cost = "{:.2f}".format(WF.IMSkb * 0.07)
+    WF.cost = "{:.2f}".format(WF.IMSkb * WF.costPerKB)
     return WF
 
 #setting dict vals to object 
@@ -239,8 +240,9 @@ missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
 #cpi=float(cycles/totalAccess)
 cpi="{:.2f}".format(cycles/instructs)
-percentEmpty = round(((float(unusedBlocks)/float(WF.IMSkb))*100), 2)
-wastedMoney = round(float(WF.cost) - (float(WF.cost) * (float(unusedBlocks) / float(WF.cacheSize))), 2)
+unusedSize = round(float(unusedBlocks*(WF.blockSize + (WF.tagSize + 1)/8)/1024), 2)
+percentEmpty = round(((float(unusedSize)/float(WF.IMSkb))*100), 2)
+wastedMoney = round(float(unusedSize * float(WF.costPerKB)), 2)
 
 # Print header
 print("***** Cache Simulation Results *****")
@@ -255,7 +257,7 @@ print()
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
 print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+")")
-print("Unused Cache Space:\t" + str(unusedBlocks) + " KB / " + str(WF.IMSkb) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
+print("Unused Cache Space:\t" + str(unusedSize) + " KB / " + str(WF.IMSkb) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
 print("Unused Cache Blocks:\t" + str(unusedBlocks) + " / " + str(WF.totalBlocks))
 print()
 
