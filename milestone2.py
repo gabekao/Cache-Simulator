@@ -228,17 +228,17 @@ def runSim(WF):
                 continue
     for x in range(0, WF.totalRows):
         unusedBlocks += len(list(cacheSim.data[x]))
-        unusedBlocks = WF.totalBlocks - unusedBlocks
+    unusedBlocks = WF.totalBlocks - unusedBlocks
     return
 
+
 runSim(WF)
+
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
 #cpi=float(cycles/totalAccess)
 cpi="{:.2f}".format(cycles/instructs)
-
-
 
 # Print header
 print("***** Cache Simulation Results *****")
@@ -256,8 +256,6 @@ print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+"
 print("Unused Cache Space:\t" + str(int(debugVar)) + " KB / " + str(debugVar) + " KB = " + str(debugVar) + "% Waste: $" + str(debugVar))
 print("Unused Cache Blocks:\t" + str(int(debugVar)) + " / " + str(debugVar))
 print()
-
-
 
 """
                                                             ``.,:;;;;;;;:,``                                                                          
