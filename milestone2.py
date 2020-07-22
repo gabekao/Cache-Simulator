@@ -91,8 +91,9 @@ class Cache:
             elif (tag not in self.data[index]) and (len(self.data[index]) == self.associativity):
                 #print("Conflict miss:")
                 #print("Index R: " + hex(index) + " Tag : " + hex(tag) + " Offset : " + hex(offset))
-                #print("Index R: " + hex(index) + " Tag : " + hex(tag))
-                #print("Index C: " + hex(index) + " Tag : " + hex(list(self.data[index])[0]) + " " + hex(list(self.data[index])[1]))
+                #print("#: " + str(conflictMiss) + "| Index R: " + hex(index) + " Tag : " + hex(tag))
+                #print("#: " + str(conflictMiss) + "| Index C: " + hex(index) + " Tag : " + hex(list(self.data[index])[0]) + " " + hex(list(self.data[index])[1]))
+                #print()
                 if WF.replPol == "RR":
                     tempIndex = list(self.data[index])[0]
                     tempValue = self.data[index][tempIndex].lastAccess
@@ -100,9 +101,11 @@ class Cache:
                         if (self.data[index][x].lastAccess) < tempValue:
                             tempIndex = x
                             tempValue = self.data[index][x].lastAccess
-                        self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
+                    del self.data[index][tempIndex]
+                    self.data[index][tag] = Block(currentCycle, offset)
                 if WF.replPol == "RND":
-                    self.data[index][random.choice(list(self.data[index]))] = Block(currentCycle, offset)
+                    del self.data[index][random.choice(list(self.data[index]))]
+                    self.data[index][tag] = Block(currentCycle, offset)
                 conflictMiss += 1
             else:
                 hits += 1
