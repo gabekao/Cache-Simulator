@@ -239,8 +239,8 @@ missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
 #cpi=float(cycles/totalAccess)
 cpi="{:.2f}".format(cycles/instructs)
-percentEmpty = round(((unusedBlocks / WF.cacheSize)*100), 2)
-wastedMoney = round((WF.cost * (unusedBlocks / WF.cacheSize)), 2)
+percentEmpty = round(((float(unusedBlocks)/float(WF.cacheSize))*100), 2)
+wastedMoney = round(float(WF.cost) - (float(WF.cost) * (float(unusedBlocks) / float(WF.cacheSize))), 2)
 
 # Print header
 print("***** Cache Simulation Results *****")
