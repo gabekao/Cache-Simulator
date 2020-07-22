@@ -23,6 +23,7 @@ currentCycle = 0
 clock = 0
 cycles=0
 instructs=0
+unusedBlocks = 0
 
 # Decl. objects
 class fileInfo(object):
@@ -108,7 +109,6 @@ class Cache:
                 conflictMiss += 1
                 cycles+=(4*(math.ceil(self.blockSize/4)))
             else:
-                
                 cycles+=1
             
         actualAccess += 1
@@ -197,6 +197,7 @@ def runSim(WF):
     global clock
     global cycles
     global instructs
+    global unusedBlocks
     cacheSim = Cache(WF)
     q1 = queue.Queue(2)
     with open(WF.filename, 'r') as fp:
@@ -225,6 +226,9 @@ def runSim(WF):
                     continue #🐛🐜
             else: #blank line
                 continue
+    for x in range(0, WF.totalRows):
+        unusedBlocks += len(list(cacheSim.data[x]))
+        unusedBlocks = WF.totalBlocks - unusedBlocks
     return
 
 runSim(WF)
