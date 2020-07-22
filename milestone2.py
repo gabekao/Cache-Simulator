@@ -231,21 +231,21 @@ runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
-print("dividing", str(cycles), "/", str(totalAccess))
 #cpi=float(cycles/totalAccess)
 cpi="{:.2f}".format(cycles/instructs)
-print(cpi)
 
 
 
 # Print header
 print("***** Cache Simulation Results *****")
+print()
 print("Total Cache Accesses\t\t" + str(totalAccess) + "\t(" + str(actualAccess) + " addresses)")
 print("Cache Hits\t\t\t" + str(hits))
 print("Cache Misses\t\t\t" + str(compMiss + conflictMiss))
 print("--- Compulsory Misses:\t\t" + str(compMiss))
 print("--- Conflict Misses:\t\t" + str(conflictMiss) + "\n")
 print("***** ***** CACHE HIT & MISS RATE: ***** *****")
+print()
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
 print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+")")
