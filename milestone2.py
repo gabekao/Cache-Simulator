@@ -229,7 +229,7 @@ def runSim(WF):
 
 runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
-missRate = round((((compMiss)/actualAccess)*100), 2)
+missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
 print("dividing", str(cycles), "/", str(totalAccess))
 #cpi=float(cycles/totalAccess)
