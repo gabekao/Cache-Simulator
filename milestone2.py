@@ -237,10 +237,11 @@ runSim(WF)
 hitRate = round(((hits/actualAccess)*100), 2)
 missRate = round((((compMiss + conflictMiss)/actualAccess)*100), 2)
 totalAccess = hits + compMiss + conflictMiss
-#cpi=float(cycles/totalAccess)
+
 cpi="{:.2f}".format(cycles/instructs)
-percentEmpty = round(((float(unusedBlocks)/float(WF.IMSkb))*100), 2)
-wastedMoney = round(float(WF.cost) - (float(WF.cost) * (float(unusedBlocks) / float(WF.cacheSize))), 2)
+unusedBlockBytes = round(((unusedBlocks * WF.blockSize) / 2**10 ), 2)
+percentEmpty = round(((float(unusedBlockBytes)/float(WF.cacheSize))*100), 2)
+wastedMoney = round((unusedBlockBytes * 0.07), 2)
 
 # Print header
 print("***** Cache Simulation Results *****")
@@ -255,8 +256,8 @@ print()
 print("Hit Rate:\t\t" + str(hitRate) + "%")
 print("Miss Rate:\t\t" + str(missRate) + "%")
 print("CPI:\t\t\t" + str(cpi) + " Cycles/Instruction" + "\t(" + str(instructs)+")")
-print("Unused Cache Space:\t" + str(unusedBlocks) + " KB / " + str(WF.IMSkb) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
-print("Unused Cache Blocks:\t" + str(unusedBlocks) + " / " + str(WF.totalBlocks))
+print("Unused Cache Space:\t" + str(unusedBlockBytes) + " KB / " + str(WF.cacheSize) + " KB = " + str(percentEmpty) + "% Waste: $" + str(wastedMoney))
+print("Unused Cache Blocks:\t" + str(int(unusedBlocks)) + " / " + str(WF.totalBlocks))
 print()
 
 """
